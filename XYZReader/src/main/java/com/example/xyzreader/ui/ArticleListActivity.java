@@ -1,15 +1,16 @@
 package com.example.xyzreader.ui;
 
 import android.annotation.SuppressLint;
-import android.app.LoaderManager;
+import android.app.ActivityOptions;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
@@ -49,6 +50,8 @@ public class ArticleListActivity extends AppCompatActivity implements
     @BindView(R.id.recycler_view)
     RecyclerView recyclerView;
 
+    private ArticleListActivity activity;
+
     @SuppressLint("SimpleDateFormat")
     private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.sss");
     // Use default locale format
@@ -64,8 +67,9 @@ public class ArticleListActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_article_list);
         ButterKnife.bind(this);
+        activity = this;
         registerEventHandlers();
-        getLoaderManager().initLoader(0, null, this);
+        getSupportLoaderManager().initLoader(0, null, this);
         if (savedInstanceState == null) {
             refresh();
         }
@@ -153,8 +157,13 @@ public class ArticleListActivity extends AppCompatActivity implements
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    Bundle bundle = ActivityOptions.makeSceneTransitionAnimation(
+                            activity,
+                            viewHolder.thumbnailView,
+                            activity.getString(R.string.article_image_transition)
+                    ).toBundle();
                     startActivity(new Intent(Intent.ACTION_VIEW,
-                            ItemsContract.Items.buildItemUri(getItemId(viewHolder.getAdapterPosition()))));
+                            ItemsContract.Items.buildItemUri(getItemId(viewHolder.getAdapterPosition()))), bundle);
                 }
             });
             return viewHolder;
