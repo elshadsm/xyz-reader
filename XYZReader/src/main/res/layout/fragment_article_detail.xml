@@ -15,7 +15,6 @@
 
             <FrameLayout
                 android:id="@+id/photo_container"
-                android:transitionName="@string/article_image_transition"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/article_detail_height"
                 android:background="@color/photo_placeholder">
@@ -115,7 +114,7 @@
         android:contentDescription="@string/action_share"
         android:elevation="@dimen/fab_elevation"
         android:src="@drawable/ic_share"
-        android:stateListAnimator="@anim/fab_state_list_anim"
+        android:stateListAnimator="@animator/fab_state_list_anim"
         tools:ignore="UnusedAttribute" />
 
 </com.example.xyzreader.ui.DrawInsetsFrameLayout>
