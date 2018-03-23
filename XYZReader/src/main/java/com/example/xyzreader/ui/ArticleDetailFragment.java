@@ -16,10 +16,8 @@ import java.util.GregorianCalendar;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
-import android.support.v4.app.ShareCompat;
 import android.support.v4.content.Loader;
 import android.support.v7.graphics.Palette;
 import android.text.Html;
@@ -68,8 +66,6 @@ public class ArticleDetailFragment extends Fragment implements
     TextView bylineView;
     @BindView(R.id.article_body)
     TextView bodyView;
-    @BindView(R.id.share_fab)
-    FloatingActionButton floatingActionButton;
     @BindView(R.id.see_more)
     TextView seeMore;
     @BindView(R.id.meta_bar)
@@ -160,15 +156,6 @@ public class ArticleDetailFragment extends Fragment implements
                 getActivityCast().onUpButtonFloorChanged(itemId, ArticleDetailFragment.this);
                 photoContainerView.setTranslationY((int) (scrollY - scrollY / PARALLAX_FACTOR));
                 updateStatusBar();
-            }
-        });
-        floatingActionButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(Intent.createChooser(ShareCompat.IntentBuilder.from(getActivity())
-                        .setType("text/plain")
-                        .setText("Some sample text")
-                        .getIntent(), getString(R.string.action_share)));
             }
         });
     }

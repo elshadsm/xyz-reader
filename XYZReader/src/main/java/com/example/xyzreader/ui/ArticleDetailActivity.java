@@ -1,19 +1,20 @@
 package com.example.xyzreader.ui;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.app.LoaderManager;
+import android.support.v4.app.ShareCompat;
 import android.support.v4.content.Loader;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.transition.Fade;
-import android.transition.Transition;
-import android.transition.TransitionInflater;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
@@ -47,6 +48,11 @@ public class ArticleDetailActivity extends AppCompatActivity
     View upButtonContainer;
     @BindView(R.id.action_up)
     View upButton;
+    @BindView(R.id.share_fab)
+    FloatingActionButton floatingActionButton;
+
+    private ArticleDetailActivity activity;
+    private String shareText = "Some sample text";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +64,7 @@ public class ArticleDetailActivity extends AppCompatActivity
                         View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
         setContentView(R.layout.activity_article_detail);
         ButterKnife.bind(this);
+        activity = this;
         getSupportLoaderManager().initLoader(0, null, this);
         pagerAdapter = new MyPagerAdapter(getSupportFragmentManager());
         pager.setAdapter(pagerAdapter);
@@ -81,6 +88,9 @@ public class ArticleDetailActivity extends AppCompatActivity
                 upButton.animate()
                         .alpha((state == ViewPager.SCROLL_STATE_IDLE) ? 1f : 0f)
                         .setDuration(300);
+                floatingActionButton.animate()
+                        .alpha((state == ViewPager.SCROLL_STATE_IDLE) ? 1f : 0f)
+                        .setDuration(300);
             }
 
             @Override
@@ -90,6 +100,7 @@ public class ArticleDetailActivity extends AppCompatActivity
                 }
                 assert cursor != null;
                 selectedItemId = cursor.getLong(ArticleLoader.Query._ID);
+                shareText = cursor.getString(ArticleLoader.Query.TITLE);
                 updateUpButtonPosition();
             }
         });
@@ -107,6 +118,15 @@ public class ArticleDetailActivity extends AppCompatActivity
                 upButtonContainer.setTranslationY(topInset);
                 updateUpButtonPosition();
                 return windowInsets;
+            }
+        });
+        floatingActionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(Intent.createChooser(ShareCompat.IntentBuilder.from(activity)
+                        .setType("text/plain")
+                        .setText(shareText)
+                        .getIntent(), getString(R.string.action_share)));
             }
         });
     }
@@ -139,6 +159,9 @@ public class ArticleDetailActivity extends AppCompatActivity
                 cursor.moveToNext();
             }
             startId = 0;
+        }
+        if (pagerAdapter.getCount() > 0) {
+            shareText = cursor.getString(ArticleLoader.Query.TITLE);
         }
     }
 

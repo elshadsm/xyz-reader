@@ -17,16 +17,10 @@
 
 <resources>
 
-    <style name="Theme.Bacon" parent="@style/Theme.AppCompat.Light.NoActionBar">
+    <style name="AppTheme" parent="@style/Theme.AppCompat.Light.NoActionBar">
         <item name="colorPrimary">@color/teal</item>
         <item name="colorPrimaryDark">@color/teal_dark</item>
-        <item name="colorAccent">@color/teal_light</item>
-    </style>
-
-    <style name="Theme.Bacon.Detail" parent="@style/Theme.AppCompat.Light.DarkActionBar">
-        <item name="colorPrimary">@color/teal</item>
-        <item name="colorPrimaryDark">@color/teal_dark</item>
-        <item name="colorAccent">@color/teal_light</item>
+        <item name="colorAccent">@color/yellow</item>
     </style>
 
 </resources>

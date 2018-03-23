@@ -2,7 +2,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/draw_insets_frame_layout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/white">
 
     <com.example.xyzreader.ui.ObservableScrollView
         android:id="@+id/scrollview"
@@ -102,19 +103,5 @@
             </com.example.xyzreader.ui.MaxWidthLinearLayout>
         </RelativeLayout>
     </com.example.xyzreader.ui.ObservableScrollView>
-
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/share_fab"
-        android:layout_width="@dimen/fab_height"
-        android:layout_height="@dimen/fab_width"
-        android:layout_gravity="bottom|end"
-        android:layout_marginBottom="@dimen/fab_margin"
-        android:layout_marginEnd="@dimen/fab_margin"
-        android:background="@drawable/add_fab_background"
-        android:contentDescription="@string/action_share"
-        android:elevation="@dimen/fab_elevation"
-        android:src="@drawable/ic_share"
-        android:stateListAnimator="@animator/fab_state_list_anim"
-        tools:ignore="UnusedAttribute" />
 
 </com.example.xyzreader.ui.DrawInsetsFrameLayout>
