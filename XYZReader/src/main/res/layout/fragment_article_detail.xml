@@ -99,7 +99,7 @@
                     android:text="@string/see_more"
                     android:textColor="@color/teal_dark"
                     android:textSize="@dimen/detail_body_text_size"
-                    android:visibility="gone" />
+                    android:visibility="visible" />
             </com.example.xyzreader.ui.MaxWidthLinearLayout>
         </RelativeLayout>
     </com.example.xyzreader.ui.ObservableScrollView>

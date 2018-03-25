@@ -1,7 +1,6 @@
 package com.example.xyzreader.ui;
 
 import android.annotation.SuppressLint;
-import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -51,6 +50,8 @@ public class ArticleDetailFragment extends Fragment implements
 
     public static final String ARG_ITEM_ID = "item_id";
     private static final float PARALLAX_FACTOR = 1.25f;
+    private static final String SCROLL_POSITION_KEY = "scroll_position_key";
+    private static final String SEE_MORE_VISIBLE_KEY = "see_more_visible_key";
 
     @BindView(R.id.scrollview)
     ObservableScrollView scrollView;
@@ -71,6 +72,7 @@ public class ArticleDetailFragment extends Fragment implements
     @BindView(R.id.meta_bar)
     LinearLayout metaBar;
 
+    private Bundle savedInstanceState;
     private ColorDrawable statusBarColorDrawable;
     private int statusBarFullOpacityBottom;
     private int mutedColor = 0xFF333333;
@@ -96,6 +98,13 @@ public class ArticleDetailFragment extends Fragment implements
     public ArticleDetailFragment() {
     }
 
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        outState.putIntArray(SCROLL_POSITION_KEY, new int[]{scrollView.getScrollX(), scrollView.getScrollY()});
+        outState.putBoolean(SEE_MORE_VISIBLE_KEY, seeMore.getVisibility() == View.VISIBLE);
+        super.onSaveInstanceState(outState);
+    }
+
     public static ArticleDetailFragment newInstance(long itemId) {
         Bundle arguments = new Bundle();
         arguments.putLong(ARG_ITEM_ID, itemId);
@@ -107,7 +116,8 @@ public class ArticleDetailFragment extends Fragment implements
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments().containsKey(ARG_ITEM_ID)) {
+        this.savedInstanceState = savedInstanceState;
+        if (getArguments() != null && getArguments().containsKey(ARG_ITEM_ID)) {
             itemId = getArguments().getLong(ARG_ITEM_ID);
         }
         isCard = getResources().getBoolean(R.bool.detail_is_card);
@@ -139,6 +149,7 @@ public class ArticleDetailFragment extends Fragment implements
         registerEventHandlers();
         bindViews();
         updateStatusBar();
+        restoreScrollViewState();
         return rootView;
     }
 
@@ -175,15 +186,30 @@ public class ArticleDetailFragment extends Fragment implements
         drawInsetsFrameLayout.setInsetBackground(statusBarColorDrawable);
     }
 
-    static float progress(float v, float min, float max) {
-        return constrain((v - min) / (max - min), 0, 1);
+    public void restoreScrollViewState() {
+        if (savedInstanceState == null) {
+            return;
+        }
+        final int[] position = savedInstanceState.getIntArray(SCROLL_POSITION_KEY);
+        if (position == null) {
+            return;
+        }
+        scrollView.post(new Runnable() {
+            public void run() {
+                scrollView.scrollTo(position[0], position[1]);
+            }
+        });
     }
 
-    static float constrain(float val, float min, float max) {
-        if (val < min) {
-            return min;
-        } else if (val > max) {
-            return max;
+    static float progress(float v, float min, float max) {
+        return constrain((v - min) / (max - min));
+    }
+
+    static float constrain(float val) {
+        if (val < (float) 0) {
+            return (float) 0;
+        } else if (val > (float) 1) {
+            return (float) 1;
         } else {
             return val;
         }
@@ -244,7 +270,11 @@ public class ArticleDetailFragment extends Fragment implements
 
     private void applyLoadMoreConfiguration() {
         final String details = cursor.getString(ArticleLoader.Query.BODY);
-        if (details.length() > 200) {
+        boolean seeMoreVisible = true;
+        if (savedInstanceState != null) {
+            seeMoreVisible = savedInstanceState.getBoolean(SEE_MORE_VISIBLE_KEY, true);
+        }
+        if (seeMoreVisible && details.length() > 200) {
             Spanned fromHtml = Html.fromHtml(details.substring(0, 200)
                     .replaceAll("(\r\n|\n)", "<br />"));
             bodyView.setText(String.format("%s...", fromHtml.toString()));
@@ -268,26 +298,28 @@ public class ArticleDetailFragment extends Fragment implements
                     public void onResponse(ImageLoader.ImageContainer imageContainer, boolean b) {
                         Bitmap bitmap = imageContainer.getBitmap();
                         if (bitmap != null) {
-                            Palette p = Palette.generate(bitmap, 12);
+                            Palette p = Palette.from(bitmap).generate();
                             mutedColor = p.getDarkMutedColor(0xFF333333);
                             photoView.setImageBitmap(imageContainer.getBitmap());
                             metaBar.setBackgroundColor(mutedColor);
                             updateStatusBar();
                         }
                     }
+
                     @Override
                     public void onErrorResponse(VolleyError volleyError) {
                     }
                 });
     }
 
+    @NonNull
     @Override
     public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
         return ArticleLoader.newInstanceForItemId(getActivity(), itemId);
     }
 
     @Override
-    public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor) {
+    public void onLoadFinished(@NonNull Loader<Cursor> cursorLoader, Cursor cursor) {
         if (!isAdded()) {
             if (cursor != null) {
                 cursor.close();
@@ -306,7 +338,7 @@ public class ArticleDetailFragment extends Fragment implements
     }
 
     @Override
-    public void onLoaderReset(Loader<Cursor> cursorLoader) {
+    public void onLoaderReset(@NonNull Loader<Cursor> cursorLoader) {
         this.cursor = null;
         bindViews();
     }
