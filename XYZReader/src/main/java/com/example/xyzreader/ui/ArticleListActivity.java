@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.LoaderManager;
@@ -53,6 +54,9 @@ public class ArticleListActivity extends AppCompatActivity implements
     RecyclerView recyclerView;
 
     private ArticleListActivity activity;
+    private Bundle savedInstanceState;
+
+    private static final String SAVED_LAYOUT_MANAGER_KEY = "saved_layout_manager";
 
     @SuppressLint("SimpleDateFormat")
     private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.sss");
@@ -65,12 +69,19 @@ public class ArticleListActivity extends AppCompatActivity implements
     private boolean isRefreshing = false;
 
     @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        outState.putParcelable(SAVED_LAYOUT_MANAGER_KEY, recyclerView.getLayoutManager().onSaveInstanceState());
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getWindow().requestFeature(Window.FEATURE_CONTENT_TRANSITIONS);
         setupWindowAnimations();
         setContentView(R.layout.activity_article_list);
         ButterKnife.bind(this);
+        this.savedInstanceState = savedInstanceState;
         activity = this;
         registerEventHandlers();
         getSupportLoaderManager().initLoader(0, null, this);
@@ -94,6 +105,13 @@ public class ArticleListActivity extends AppCompatActivity implements
 
     private void setupWindowAnimations() {
         getWindow().setExitTransition(new Explode());
+    }
+
+    public void restoreViewState() {
+        if (savedInstanceState != null) {
+            Parcelable savedRecyclerLayoutState = savedInstanceState.getParcelable(SAVED_LAYOUT_MANAGER_KEY);
+            recyclerView.getLayoutManager().onRestoreInstanceState(savedRecyclerLayoutState);
+        }
     }
 
     @Override
@@ -138,6 +156,7 @@ public class ArticleListActivity extends AppCompatActivity implements
         StaggeredGridLayoutManager sglm =
                 new StaggeredGridLayoutManager(columnCount, StaggeredGridLayoutManager.VERTICAL);
         recyclerView.setLayoutManager(sglm);
+        restoreViewState();
     }
 
     @Override
