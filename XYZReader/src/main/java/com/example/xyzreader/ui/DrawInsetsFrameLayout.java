@@ -21,11 +21,9 @@ import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.support.design.widget.CoordinatorLayout;
 import android.util.AttributeSet;
 import android.view.WindowInsets;
-import android.widget.FrameLayout;
 
 import com.example.xyzreader.R;
 

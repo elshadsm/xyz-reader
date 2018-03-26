@@ -20,8 +20,6 @@
 
     <color name="teal">#009688</color>
     <color name="teal_dark">#00675b</color>
-    <color name="teal_light">#52c7b8</color>
-    <color name="ltgray">#ffe0e0e0</color>
     <color name="text_color">#000000</color>
     <color name="grey_600">#757575</color>
     <color name="grey_900">#212121</color>

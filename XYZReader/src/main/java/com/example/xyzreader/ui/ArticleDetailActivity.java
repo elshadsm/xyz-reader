@@ -41,6 +41,9 @@ public class ArticleDetailActivity extends AppCompatActivity
     private int selectedItemUpButtonFloor = Integer.MAX_VALUE;
     private int topInset;
 
+    private String shareText = "Some sample text";
+    private ArticleDetailActivity activity;
+
     private MyPagerAdapter pagerAdapter;
     @BindView(R.id.pager)
     ViewPager pager;
@@ -50,9 +53,6 @@ public class ArticleDetailActivity extends AppCompatActivity
     View upButton;
     @BindView(R.id.share_fab)
     FloatingActionButton floatingActionButton;
-
-    private ArticleDetailActivity activity;
-    private String shareText = "Some sample text";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,7 +92,6 @@ public class ArticleDetailActivity extends AppCompatActivity
                         .alpha((state == ViewPager.SCROLL_STATE_IDLE) ? 1f : 0f)
                         .setDuration(300);
             }
-
             @Override
             public void onPageSelected(int position) {
                 if (cursor != null) {
@@ -145,7 +144,6 @@ public class ArticleDetailActivity extends AppCompatActivity
     public void onLoadFinished(@NonNull Loader<Cursor> cursorLoader, Cursor cursor) {
         this.cursor = cursor;
         pagerAdapter.notifyDataSetChanged();
-
         // Select the start ID
         if (startId > 0) {
             cursor.moveToFirst();
@@ -170,7 +168,6 @@ public class ArticleDetailActivity extends AppCompatActivity
         cursor = null;
         pagerAdapter.notifyDataSetChanged();
     }
-
     public void onUpButtonFloorChanged(long itemId, ArticleDetailFragment fragment) {
         if (itemId == selectedItemId) {
             selectedItemUpButtonFloor = fragment.getUpButtonFloor();

@@ -72,10 +72,10 @@ public class ArticleDetailFragment extends Fragment implements
     @BindView(R.id.meta_bar)
     LinearLayout metaBar;
 
-    private Bundle savedInstanceState;
     private ColorDrawable statusBarColorDrawable;
     private int statusBarFullOpacityBottom;
     private int mutedColor = 0xFF333333;
+    private Bundle savedInstanceState;
     private boolean isCard = false;
     private View rootView;
     private Cursor cursor;
@@ -102,10 +102,6 @@ public class ArticleDetailFragment extends Fragment implements
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         outState.putIntArray(SCROLL_POSITION_KEY, new int[]{scrollView.getScrollX(), scrollView.getScrollY()});
-        System.out.println("1. == " + seeMoreVisible);
-        if (cursor != null) {
-            System.out.println("2. title: " + cursor.getString(ArticleLoader.Query.TITLE));
-        }
         outState.putBoolean(SEE_MORE_VISIBLE_KEY, seeMoreVisible);
         super.onSaveInstanceState(outState);
     }
@@ -338,7 +334,6 @@ public class ArticleDetailFragment extends Fragment implements
             this.cursor.close();
             this.cursor = null;
         }
-
         bindViews();
     }
 
@@ -352,7 +347,6 @@ public class ArticleDetailFragment extends Fragment implements
         if (photoContainerView == null || photoView.getHeight() == 0) {
             return Integer.MAX_VALUE;
         }
-
         // account for parallax
         return isCard
                 ? (int) photoContainerView.getTranslationY() + photoView.getHeight() - scrollY
