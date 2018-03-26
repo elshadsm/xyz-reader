@@ -82,6 +82,7 @@ public class ArticleDetailFragment extends Fragment implements
     private int topInset;
     private long itemId;
     private int scrollY;
+    public boolean seeMoreVisible = true;
 
     @SuppressLint("SimpleDateFormat")
     private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.sss");
@@ -101,7 +102,11 @@ public class ArticleDetailFragment extends Fragment implements
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         outState.putIntArray(SCROLL_POSITION_KEY, new int[]{scrollView.getScrollX(), scrollView.getScrollY()});
-        outState.putBoolean(SEE_MORE_VISIBLE_KEY, seeMore.getVisibility() == View.VISIBLE);
+        System.out.println("1. == " + seeMoreVisible);
+        if (cursor != null) {
+            System.out.println("2. title: " + cursor.getString(ArticleLoader.Query.TITLE));
+        }
+        outState.putBoolean(SEE_MORE_VISIBLE_KEY, seeMoreVisible);
         super.onSaveInstanceState(outState);
     }
 
@@ -270,7 +275,6 @@ public class ArticleDetailFragment extends Fragment implements
 
     private void applyLoadMoreConfiguration() {
         final String details = cursor.getString(ArticleLoader.Query.BODY);
-        boolean seeMoreVisible = true;
         if (savedInstanceState != null) {
             seeMoreVisible = savedInstanceState.getBoolean(SEE_MORE_VISIBLE_KEY, true);
         }
@@ -284,6 +288,7 @@ public class ArticleDetailFragment extends Fragment implements
                 public void onClick(View view) {
                     bodyView.setText(Html.fromHtml(details.replaceAll("(\r\n|\n)", "<br />")));
                     view.setVisibility(View.GONE);
+                    ArticleDetailFragment.this.seeMoreVisible = false;
                 }
             });
         } else {
