@@ -3,4 +3,6 @@
     <string name="action_share">Share</string>
     <string name="up">Up</string>
     <string name="see_more">See more…</string>
+    <string name="connected_error_message">Connection problems</string>
+    <string name="snack_bar_try_again">Try again</string>
 </resources>

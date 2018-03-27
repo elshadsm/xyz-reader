@@ -9,6 +9,8 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
@@ -52,6 +54,8 @@ public class ArticleListActivity extends AppCompatActivity implements
     SwipeRefreshLayout swipeRefreshLayout;
     @BindView(R.id.recycler_view)
     RecyclerView recyclerView;
+    @BindView(R.id.coordinator_layout)
+    CoordinatorLayout coordinatorLayout;
 
     private ArticleListActivity activity;
     private Bundle savedInstanceState;
@@ -119,6 +123,7 @@ public class ArticleListActivity extends AppCompatActivity implements
         super.onStart();
         registerReceiver(refreshingReceiver,
                 new IntentFilter(UpdaterService.BROADCAST_ACTION_STATE_CHANGE));
+        registerReceiver(refreshingReceiver, new IntentFilter(UpdaterService.BROADCAST_ACTION_NOT_CONNECTED));
     }
 
     @Override
@@ -130,8 +135,13 @@ public class ArticleListActivity extends AppCompatActivity implements
     private BroadcastReceiver refreshingReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+            System.out.println("1111111111 "+intent.getAction());
             if (UpdaterService.BROADCAST_ACTION_STATE_CHANGE.equals(intent.getAction())) {
                 isRefreshing = intent.getBooleanExtra(UpdaterService.EXTRA_REFRESHING, false);
+                updateRefreshingUI();
+            } else if(UpdaterService.BROADCAST_ACTION_NOT_CONNECTED.equals(intent.getAction())) {
+                showConnectionErrorMessage();
+                isRefreshing = false;
                 updateRefreshingUI();
             }
         }
@@ -139,6 +149,17 @@ public class ArticleListActivity extends AppCompatActivity implements
 
     private void updateRefreshingUI() {
         swipeRefreshLayout.setRefreshing(isRefreshing);
+    }
+
+    private void showConnectionErrorMessage() {
+        Snackbar.make(coordinatorLayout, getString(R.string.connected_error_message),
+                Snackbar.LENGTH_LONG).setAction(R.string.snack_bar_try_again,
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        refresh();
+                    }
+                }).show();
     }
 
     @NonNull
